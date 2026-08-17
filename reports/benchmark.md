@@ -2,68 +2,33 @@
 
 - Implementation: `student`
 - Kind: `practice`
-- Cases: **11**
-- Passed: **2/11**
-- Evidence hit rate: **18.2%**
-- Average retrieval latency: **2652.0 ms**
-- Average token reduction vs full source context: **81.8%**
+- Cases: **4**
+- Passed: **3/4**
+- Evidence hit rate: **75.0%**
+- Average retrieval latency: **3977.3 ms**
+- Average token reduction vs full source context: **25.0%**
 
 | Case | Layer | Pass | Latency ms | Retrieved tokens | Token reduction | Missing / Error |
 | --- | --- | --- | ---: | ---: | ---: | --- |
-| E01 | short_term | PASS | 0.0 | 133 | 0.0% |  |
-| E06 | semantic | FAIL | 0.0 | 0 | 100.0% | NotImplementedError: LAB TODO: implement semantic graph search |
-| E09 | long_term | FAIL | 22362.3 | 0 | 100.0% | NotImplementedError: LAB TODO: implement long-term retrieval with Zep Context Block |
-| E10 | short_term | PASS | 0.3 | 195 | 0.0% |  |
-| E02 | long_term | FAIL | 2726.1 | 0 | 100.0% | NotImplementedError: LAB TODO: implement long-term retrieval with Zep Context Block |
-| E03 | long_term | FAIL | 822.3 | 0 | 100.0% | NotImplementedError: LAB TODO: implement long-term retrieval with Zep Context Block |
-| E04 | episodic | FAIL | 0.0 | 0 | 100.0% | NotImplementedError: LAB TODO: implement episodic search |
-| E05 | episodic | FAIL | 0.0 | 0 | 100.0% | NotImplementedError: LAB TODO: implement episodic search |
-| E07 | mixed | FAIL | 790.7 | 0 | 100.0% | NotImplementedError: LAB TODO: implement long-term retrieval with Zep Context Block |
-| E11 | semantic | FAIL | 0.0 | 0 | 100.0% | NotImplementedError: LAB TODO: implement semantic graph search |
-| E08 | long_term | FAIL | 2470.6 | 0 | 100.0% | NotImplementedError: LAB TODO: implement long-term retrieval with Zep Context Block |
+| E09 | long_term | FAIL | 5723.7 | 0 | 100.0% | BadRequestError: headers: {'date': 'Mon, 17 Aug 2026 10:01:19 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '119', 'connection': 'keep-alive', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-ratelimit-increment': '1', 'x-ratelimit-limit': '300', 'x-ratelimit-remaining': '278', 'x-ratelimit-reset': '1786960920', 'strict-transport-security': 'max-age=2592000', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'cf-ray': 'a2c7d6361fe7dd57-HKG'}, status_code: 400, body: {'message': 'bad request: session with id eval-e09 already exists', 'request_id': '11c1a765-ada3-4130-9c8c-289c7109f34c'} |
+| E02 | long_term | PASS | 2702.4 | 1270 | 0.0% |  |
+| E03 | long_term | PASS | 4359.2 | 1265 | 0.0% |  |
+| E08 | long_term | PASS | 3123.9 | 1290 | 0.0% |  |
 
 ## Evidence excerpts
-
-### E01 - short_term
-
-`<RECENT_TURNS> user: Ten du an ca nhan cua toi la ORCHID-27. Toi thich Python va khong thich Java. Khi giai thich code, hay dung vi du ngan. assistant: Da hieu: demo ca nhan ORCHID-27, uu tien Python, tranh Java, vi du ngan. user: Toi dang hoc async/await va hay nham coroutine voi Task. Neu sau nay gap chu de nay, hay giai thich bang timeline. assistant: Toi se uu tien timeline khi giai thich coroutine va Task. user: TODO: hoan thanh benchmark report truoc thu Sau luc 16:00. Day la open loop LAB-REPORT-1600. </RECENT_TURNS>`
-
-### E06 - semantic
-
-``
 
 ### E09 - long_term
 
 ``
 
-### E10 - short_term
-
-`<SESSION_SUMMARY> user: Constraint: REVIEW-DEADLINE-1600 - project review is Friday at 16:00 and must not be forgotten. | assistant: Acknowledged review constraint. | user: Filler turn 1 about UI spacing. | assistant: Filler answer 1. | user: Filler turn 2 about naming. | assistant: Filler answer 2. | user: Filler turn 3 about logging. | assistant: Filler answer 3. </SESSION_SUMMARY> <DURABLE_NOTES> - user: Constraint: REVIEW-DEADLINE-1600 - project review is Friday at 16:00 and must not be forgotten. - assistant: Acknowledged review constraint. </DURABLE_NOTES> <RECENT_TURNS> user: Filler turn 4 about tests. assistant: Filler answer 4. user: Filler turn 5 about docs. assistant: Filler answe`
-
 ### E02 - long_term
 
-``
+`<USER_SUMMARY> The user works on a company project named BLUEBIRD-42, which requires using TypeScript with NestJS and prohibits Python. For personal demos, the user prefers Python for their project ORCHID-27.  The user prefers Python and dislikes Java. They prefer short examples when code is explained. They are learning async/await and sometimes confuse coroutines with Tasks. When this topic arises, they want it explained using a timeline. </USER_SUMMARY>  <EPISODES> Episodes are source message or document excerpts shown in selection order.   - Created At: 2026-08-01 09:00:00     Source: message     Content: [user] {   "user_id": "minh-lab17",   "first_name": "Minh",   "last_name": "Nguyen",`
 
 ### E03 - long_term
 
-``
-
-### E04 - episodic
-
-``
-
-### E05 - episodic
-
-``
-
-### E07 - mixed
-
-``
-
-### E11 - semantic
-
-``
+`<USER_SUMMARY> The user works on a company project named BLUEBIRD-42, which requires using TypeScript with NestJS and prohibits Python. For personal demos, the user prefers Python for their project ORCHID-27.  The user prefers Python and dislikes Java. They prefer short examples when code is explained. They are learning async/await and sometimes confuse coroutines with Tasks. When this topic arises, they want it explained using a timeline. </USER_SUMMARY>  <EPISODES> Episodes are source message or document excerpts shown in selection order.   - Created At: 2026-08-01 09:04:00     Source: message     Content: [user] {   "user_id": "minh-lab17",   "first_name": "Minh",   "last_name": "Nguyen",`
 
 ### E08 - long_term
 
-``
+`<USER_SUMMARY> The user works on a company project named BLUEBIRD-42, which requires using TypeScript with NestJS and prohibits Python. For personal demos, the user prefers Python for their project ORCHID-27.  The user prefers Python and dislikes Java. They prefer short examples when code is explained. They are learning async/await and sometimes confuse coroutines with Tasks. When this topic arises, they want it explained using a timeline. </USER_SUMMARY>  <EPISODES> Episodes are source message or document excerpts shown in selection order.   - Created At: 2026-08-05 08:00:00     Source: message     Content: [user] {   "user_id": "minh-lab17",   "first_name": "Minh",   "last_name": "Nguyen",`
