@@ -11,7 +11,7 @@
 | Case | Layer | Pass | Latency ms | Retrieved tokens | Token reduction | Missing / Error |
 | --- | --- | --- | ---: | ---: | ---: | --- |
 | E01 | short_term | PASS | 0.0 | 133 | 0.0% |  |
-| E10 | short_term | PASS | 0.1 | 195 | 0.0% |  |
+| E10 | short_term | PASS | 0.2 | 195 | 0.0% |  |
 
 ## Evidence excerpts
 

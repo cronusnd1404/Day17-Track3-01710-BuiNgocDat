@@ -7,3 +7,5 @@ data/golden_eval.json
 data/golden*.json
 !data/golden_eval.example.json
 .venv
+de_bai
+
