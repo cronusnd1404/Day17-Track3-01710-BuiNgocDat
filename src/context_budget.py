@@ -28,25 +28,7 @@ class ContextBudgetManager:
     def trim(self, text: str, max_tokens: int) -> str:
         if estimate_tokens(text) <= max_tokens:
             return text
-        import re
-
         max_chars = max_tokens * 4
-        patterns = (
-            r"\b[A-Z][A-Z0-9-]{3,}\b",
-            r"\b\d{2}:\d{2}\b",
-            r"connection churn",
-            r"connection pooling",
-            r"ClientSession",
-            r"max-3-retries",
-            r"timeline",
-        )
-        selected = [
-            line for line in text.splitlines()
-            if any(re.search(pattern, line, re.IGNORECASE) for pattern in patterns)
-        ]
-        compact = "\n".join(dict.fromkeys(selected))
-        if compact and estimate_tokens(compact) <= max_tokens:
-            return compact
         return text[:max_chars] + "\n[...trimmed...]"
 
     def assemble(self, layers: dict[str, str]) -> tuple[str, dict[str, dict[str, int]]]:

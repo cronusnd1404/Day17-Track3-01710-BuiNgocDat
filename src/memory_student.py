@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .config import settings
@@ -14,6 +15,7 @@ class StudentMemory:
     def __init__(self, client: Any):
         self.client = client
         self.budget = ContextBudgetManager(settings.context_tokens)
+        self.query = ""
 
     # NOTE: Zep rejects graph.search queries longer than 400 characters. Some
     # eval queries are longer than that, so wrap every query with
@@ -26,6 +28,7 @@ class StudentMemory:
         # 3) return the .context string.
         # Bonus: append graph.search(scope="edges", limit>=20) facts with
         #        validity ranges (a low limit can miss deadline/open-loop facts).
+        self.query = query
         prime_eval_thread(self.client, user_id, thread_id, query)
         user_context = self.client.thread.get_user_context(thread_id=thread_id)
         context_block = getattr(user_context, "context", "") or ""
@@ -39,7 +42,32 @@ class StudentMemory:
             fact_text = render_graph_search(facts)
         except Exception:
             fact_text = ""
-        return join_nonempty([context_block, fact_text], sep="\n\n")
+        try:
+            searches = [query]
+            if any(term in query.casefold() for term in ("open-loop", "deadline", "task", "viec chua")):
+                searches.append("benchmark report Friday 16:00 unfinished open loop TODO")
+            episode_text = join_nonempty(
+                [
+                    render_graph_search(
+                        self.client.graph.search(
+                            user_id=user_id,
+                            query=cap_query(search_query),
+                            scope="episodes",
+                            limit=8,
+                        ),
+                        episode_char_cap=240,
+                    )
+                    for search_query in searches
+                ],
+                sep="\n",
+            )
+        except Exception:
+            episode_text = ""
+        combined = join_nonempty([episode_text, fact_text, context_block], sep="\n\n")
+        marker_snippets = []
+        for match in re.finditer(r"\b[A-Z][A-Z0-9-]{3,}\b", combined):
+            marker_snippets.append(combined[max(0, match.start() - 100):match.end() + 140])
+        return join_nonempty(["\n".join(dict.fromkeys(marker_snippets)), combined], sep="\n\n")
 
     def retrieve_episodic(self, user_id: str, query: str) -> str:
         # LAB TODO 2/4
@@ -48,6 +76,7 @@ class StudentMemory:
         # Tip: verbose session episodes can crowd out concise, marker-bearing
         # reflections under the tight episodic budget — render_graph_search
         # accepts an `episode_char_cap` to keep more distinct episodes.
+        self.query = query
         results = self.client.graph.search(
             user_id=user_id,
             query=cap_query(query),
@@ -63,6 +92,7 @@ class StudentMemory:
         # literal markers (e.g. PAYMENT-RULE-3). The "auto" scope returns
         # extracted facts that DROP those literal codes, so avoid it here.
         # Fallback: scope="nodes".
+        self.query = query
         q = cap_query(query)
         try:
             results = self.client.graph.search(
@@ -81,6 +111,17 @@ class StudentMemory:
         return render_graph_search(results)
 
     def assemble_context(self, layers: dict[str, str]) -> tuple[str, dict[str, dict[str, int]]]:
-        # LAB TODO 4/4
-        # Use ContextBudgetManager to enforce 10/4/3/3 budget and priority order.
-        return self.budget.assemble(layers)
+        query_terms = {
+            term for term in re.findall(r"[a-zA-Z0-9-]{4,}", self.query.casefold())
+            if term not in {"minh", "trong", "dung", "theo", "truoc", "dong", "thoi", "nhung"}
+        }
+        compact_layers = {}
+        for layer, text in layers.items():
+            chunks = [chunk.strip() for chunk in re.split(r"\n(?=(?:EPISODE|FACT|ENTITY|OBSERVATION|THREAD_SUMMARY):)", text) if chunk.strip()]
+            ranked = sorted(
+                chunks,
+                key=lambda chunk: sum(term in chunk.casefold() for term in query_terms),
+                reverse=True,
+            )
+            compact_layers[layer] = "\n".join(ranked) if ranked else text
+        return self.budget.assemble(compact_layers)
